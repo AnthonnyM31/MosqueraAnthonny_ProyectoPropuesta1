@@ -20,11 +20,65 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         }
 
         // GET: Diarios
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? usuarioId)
         {
-            var diarioContext = _context.Diarios.Include(d => d.Usuario);
-            return View(await diarioContext.ToListAsync());
+            if (usuarioId == null)
+            {
+                // Si no se proporciona un ID de usuario, solo se muestra la lista de diarios.
+                var diarioContext = _context.Diarios.Include(d => d.Usuario);
+                return View(await diarioContext.ToListAsync());
+            }
+
+            // Buscar el diario por ID de usuario.
+            var diarioUsuario = await _context.Diarios
+                .Where(d => d.UsuarioId == usuarioId)
+                .Include(d => d.Usuario)
+                .ToListAsync();
+
+            if (diarioUsuario.Count == 0)
+            {
+                ViewBag.Mensaje = "No se encontró un diario para el ID de usuario proporcionado.";
+                return View(await _context.Diarios.Include(d => d.Usuario).ToListAsync());
+            }
+
+            // Mostrar los diarios del usuario encontrado.
+            return View(diarioUsuario);
         }
+
+
+        // POST: Diarios/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(int usuarioId, string contenido)
+        {
+            if (string.IsNullOrWhiteSpace(contenido))
+            {
+                ModelState.AddModelError("", "El contenido no puede estar vacío.");
+                return RedirectToAction(nameof(Index), new { usuarioId });
+            }
+
+            var diario = new Diario
+            {
+                UsuarioId = usuarioId,
+                Contenido = contenido,
+                FechaHora = DateTime.Now // Asegúrate de que tu modelo tenga esta propiedad
+            };
+
+            _context.Add(diario);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index), new { usuarioId });
+        }
+
+
+
+
+
+
+
+
+
+
+
 
         // GET: Diarios/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -52,27 +106,6 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
               return View();
           }*/
 
-        //se busca al usuario en la BD, se crea la nueva entrada, se agrega la entrada y se actualizan los puntos del usuario (en caso de que se validen)
-        public IActionResult Create(string contenido, int usuarioId)
-        {
-            var usuario = _context.Usuarios.Find(usuarioId);
-            if (usuario == null) return NotFound("Usuario no encontrado.");
-
-            var entrada = new Diario
-            {
-                UsuarioId = usuario.Id,
-                Contenido = contenido,
-                FechaHora = DateTime.Now
-            };
-
-            _context.Diarios.Add(entrada);
-            _context.SaveChanges();
-
-            usuario.Puntos += (usuario.Puntos + 1) % 5 == 0 ? 100 : 0;
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
-        }
 
 
         // POST: Diarios/Create

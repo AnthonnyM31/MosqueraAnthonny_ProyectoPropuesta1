@@ -1,0 +1,26 @@
+﻿@model IEnumerable<MosqueraAnthonny_ProyectoPropuesta1.Models.Diario>
+
+<h2>Historial de Entradas</h2>
+
+@if (ViewBag.UsuarioId != null)
+{
+    <a asp-action="Create" asp-route-usuarioId="@ViewBag.UsuarioId" class="btn btn-primary">Nueva Entrada</a>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Contenido</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entrada in Model)
+        {
+            <tr>
+                <td>@entrada.FechaHora.ToString("g")</td>
+                <td>@entrada.Contenido</td>
+            </tr>
+        }
+    </tbody>
+</table>
