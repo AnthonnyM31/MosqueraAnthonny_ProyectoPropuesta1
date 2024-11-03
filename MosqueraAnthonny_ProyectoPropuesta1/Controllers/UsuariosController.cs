@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MosqueraAnthonny_ProyectoPropuesta1.Data;
 using MosqueraAnthonny_ProyectoPropuesta1.Models;
 
 namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly UsuarioContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public UsuariosController(UsuarioContext context)
+        public UsuariosController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -21,7 +22,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         // GET: Usuarios
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Usuario.ToListAsync());
+            return View(await _context.Usuarios.ToListAsync());
         }
 
         // GET: Usuarios/Details/5
@@ -32,7 +33,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario
+            var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (usuario == null)
             {
@@ -72,7 +73,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario.FindAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -123,7 +124,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario
+            var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (usuario == null)
             {
@@ -138,10 +139,10 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _context.Usuario.FindAsync(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario != null)
             {
-                _context.Usuario.Remove(usuario);
+                _context.Usuarios.Remove(usuario);
             }
 
             await _context.SaveChangesAsync();
@@ -150,7 +151,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
 
         private bool UsuarioExists(int id)
         {
-            return _context.Usuario.Any(e => e.Id == id);
+            return _context.Usuarios.Any(e => e.Id == id);
         }
     }
 }

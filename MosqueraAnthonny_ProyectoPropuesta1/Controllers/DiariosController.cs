@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using MosqueraAnthonny_ProyectoPropuesta1.Data;
 using MosqueraAnthonny_ProyectoPropuesta1.Models;
 
 namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
 {
     public class DiariosController : Controller
     {
-        private readonly DiarioContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DiariosController(DiarioContext context)
+        public DiariosController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -21,7 +22,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         // GET: Diarios
         public async Task<IActionResult> Index()
         {
-            var diarioContext = _context.Diario.Include(d => d.Usuario);
+            var diarioContext = _context.Diarios.Include(d => d.Usuario);
             return View(await diarioContext.ToListAsync());
         }
 
@@ -33,7 +34,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return NotFound();
             }
 
-            var diario = await _context.Diario
+            var diario = await _context.Diarios
                 .Include(d => d.Usuario)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (diario == null)
@@ -44,12 +45,34 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
             return View(diario);
         }
 
-        // GET: Diarios/Create
-        public IActionResult Create()
+        // GET: Diarios/Create POR DEFECTO
+        /*  public IActionResult Create()
+          {
+              ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "Id", "Id");
+              return View();
+          }*/
+
+        public IActionResult Create(string contenido, int usuarioId)
         {
-            ViewData["UsuarioId"] = new SelectList(_context.Set<Usuario>(), "Id", "Id");
-            return View();
+            var usuario = _context.Usuarios.Find(usuarioId);
+            if (usuario == null) return NotFound("Usuario no encontrado.");
+
+            var entrada = new Diario
+            {
+                UsuarioId = usuario.Id,
+                Contenido = contenido,
+                FechaHora = DateTime.Now
+            };
+
+            _context.Diarios.Add(entrada);
+            _context.SaveChanges();
+
+            usuario.Puntos += (usuario.Puntos + 1) % 5 == 0 ? 100 : 0;
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
+
 
         // POST: Diarios/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -76,7 +99,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return NotFound();
             }
 
-            var diario = await _context.Diario.FindAsync(id);
+            var diario = await _context.Diarios.FindAsync(id);
             if (diario == null)
             {
                 return NotFound();
@@ -129,7 +152,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return NotFound();
             }
 
-            var diario = await _context.Diario
+            var diario = await _context.Diarios
                 .Include(d => d.Usuario)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (diario == null)
@@ -145,10 +168,10 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var diario = await _context.Diario.FindAsync(id);
+            var diario = await _context.Diarios.FindAsync(id);
             if (diario != null)
             {
-                _context.Diario.Remove(diario);
+                _context.Diarios.Remove(diario);
             }
 
             await _context.SaveChangesAsync();
@@ -157,7 +180,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
 
         private bool DiarioExists(int id)
         {
-            return _context.Diario.Any(e => e.Id == id);
+            return _context.Diarios.Any(e => e.Id == id);
         }
     }
 }
