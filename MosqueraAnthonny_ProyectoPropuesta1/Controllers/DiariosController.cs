@@ -52,6 +52,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
               return View();
           }*/
 
+        //se busca al usuario en la BD, se crea la nueva entrada, se agrega la entrada y se actualizan los puntos del usuario (en caso de que se validen)
         public IActionResult Create(string contenido, int usuarioId)
         {
             var usuario = _context.Usuarios.Find(usuarioId);

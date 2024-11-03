@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MosqueraAnthonny_ProyectoPropuesta1.Data;
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<UsuarioContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("UsuarioContext") ?? throw new InvalidOperationException("Connection string 'UsuarioContext' not found.")));
-builder.Services.AddDbContext<DiarioContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DiarioContext") ?? throw new InvalidOperationException("Connection string 'DiarioContext' not found.")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContext' not found.")));
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
