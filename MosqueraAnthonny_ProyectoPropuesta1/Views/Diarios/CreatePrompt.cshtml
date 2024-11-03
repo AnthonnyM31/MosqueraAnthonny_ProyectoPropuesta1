@@ -1,0 +1,20 @@
+﻿@model MosqueraAnthonny_ProyectoPropuesta1.Models.Diario
+
+@{
+    ViewBag.Title = "Crear Nuevo Diario";
+}
+
+<h2>Crear Nuevo Diario</h2>
+
+<form asp-action="CreateDiario" method="post">
+    <input type="hidden" name="usuarioId" value="@ViewBag.UsuarioId" />
+    <div class="form-group">
+        <label for="contenido">Contenido</label>
+        <textarea id="contenido" name="contenido" class="form-control" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Crear Diario</button>
+</form>
+
+
+<a asp-action="Index">Regresar</a>
+

@@ -18,6 +18,15 @@
     <p class="text-danger">@ViewBag.Mensaje</p>
 }
 
+<h2>Crear Nuevo Diario</h2>
+<form asp-action="CreatePrompt" method="get">
+    <div class="form-group">
+        <label for="nuevoUsuarioId">ID de Usuario</label>
+        <input type="number" id="nuevoUsuarioId" name="usuarioId" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success">Crear Diario</button>
+</form>
+
 @if (Model != null && Model.Any())
 {
     <h3>Diarios del Usuario</h3>
@@ -30,12 +39,13 @@
     }
 
     <h4>Agregar nuevo contenido</h4>
-    <form asp-action="Create" method="post">
-        <input type="hidden" name="usuarioId" value="@Model.FirstOrDefault().UsuarioId" />
+    <form asp-action="CreateDiario" method="post">
+        <input type="hidden" name="usuarioId" value="@ViewBag.UsuarioId" />
         <div class="form-group">
             <label for="contenido">Contenido</label>
             <textarea id="contenido" name="contenido" class="form-control" required></textarea>
         </div>
-        <button type="submit" class="btn btn-success">Agregar Entrada</button>
+        <button type="submit" class="btn btn-success">Crear Diario</button>
     </form>
+
 }

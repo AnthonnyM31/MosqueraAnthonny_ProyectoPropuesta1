@@ -19,6 +19,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
             _context = context;
         }
 
+
         // GET: Diarios
         public async Task<IActionResult> Index(int? usuarioId)
         {
@@ -30,10 +31,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
             }
 
             // Buscar el diario por ID de usuario.
-            var diarioUsuario = await _context.Diarios
-                .Where(d => d.UsuarioId == usuarioId)
-                .Include(d => d.Usuario)
-                .ToListAsync();
+            var diarioUsuario = await _context.Diarios.Where(d => d.UsuarioId == usuarioId).Include(d => d.Usuario).ToListAsync();
 
             if (diarioUsuario.Count == 0)
             {
@@ -49,14 +47,24 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         // POST: Diarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int usuarioId, string contenido)
+        public async Task<IActionResult> CreateDiario(int usuarioId, string contenido)
         {
+            // Verificar si el contenido no está vacío
             if (string.IsNullOrWhiteSpace(contenido))
             {
                 ModelState.AddModelError("", "El contenido no puede estar vacío.");
-                return RedirectToAction(nameof(Index), new { usuarioId });
+                return RedirectToAction(nameof(CreatePrompt), new { usuarioId });
             }
 
+            // Verificar si el usuario existe
+            var usuario = await _context.Usuarios.FindAsync(usuarioId);
+            if (usuario == null)
+            {
+                ModelState.AddModelError("", "No se encontró un usuario con el ID proporcionado.");
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Crear el nuevo diario
             var diario = new Diario
             {
                 UsuarioId = usuarioId,
@@ -68,6 +76,44 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index), new { usuarioId });
         }
+
+
+        public IActionResult CreatePrompt(int usuarioId)
+        {
+            // Verificar si el usuario existe
+            var usuario = _context.Usuarios.Find(usuarioId);
+            if (usuario == null)
+            {
+                ViewBag.Mensaje = "No se encontró un usuario con el ID proporcionado.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Si el usuario existe, redirigir a la vista para crear un diario
+            ViewBag.UsuarioId = usuarioId; // Pasar el ID del usuario a la vista
+            return View();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
