@@ -25,23 +25,26 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         {
             if (usuarioId == null)
             {
-                // Si no se proporciona un ID de usuario, solo se muestra la lista de diarios.
-                var diarioContext = _context.Diarios.Include(d => d.Usuario);
-                return View(await diarioContext.ToListAsync());
+                ViewBag.Mensaje = "Por favor ingrese un ID de usuario para buscar.";
+                return View(new List<Diario>());
             }
 
-            // Buscar el diario por ID de usuario.
-            var diarioUsuario = await _context.Diarios.Where(d => d.UsuarioId == usuarioId).Include(d => d.Usuario).ToListAsync();
+            // Buscar los diarios del usuario con el ID especificado
+            var diariosUsuario = await _context.Diarios
+                .Where(d => d.UsuarioId == usuarioId)
+                .Include(d => d.Usuario)
+                .ToListAsync();
 
-            if (diarioUsuario.Count == 0)
+            if (!diariosUsuario.Any())
             {
                 ViewBag.Mensaje = "No se encontró un diario para el ID de usuario proporcionado.";
-                return View(await _context.Diarios.Include(d => d.Usuario).ToListAsync());
+                return View(new List<Diario>());
             }
 
-            // Mostrar los diarios del usuario encontrado.
-            return View(diarioUsuario);
+            // Mostrar los diarios del usuario encontrado
+            return View(diariosUsuario);
         }
+
 
 
         // POST: Diarios/Create
