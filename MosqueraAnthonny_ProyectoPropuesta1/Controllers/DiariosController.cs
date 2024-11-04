@@ -38,10 +38,7 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
             }
 
             // Buscar los diarios del usuario con el ID especificado
-            var diariosUsuario = await _context.Diarios
-                .Where(d => d.UsuarioId == usuarioId)
-                .Include(d => d.Usuario)
-                .ToListAsync();
+            var diariosUsuario = await _context.Diarios.Where(d => d.UsuarioId == usuarioId).Include(d => d.Usuario).ToListAsync();
 
             if (!diariosUsuario.Any())
             {
@@ -49,11 +46,11 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return View(new List<Diario>());
             }
 
-            // Pasar el nombre y el ID del usuario a la vista
+            // usaremos el viewbag para mostrar tanto el nombre como el id en el html
             ViewBag.NombreUsuario = usuario.NombreUsuario;
             ViewBag.IdUsuario = usuarioId;
 
-            // Mostrar los diarios del usuario encontrado
+            // mostrar los diarios del usuario encontrado
             return View(diariosUsuario);
         }
 
@@ -65,14 +62,14 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateDiario(int usuarioId, string contenido)
         {
-            // Verificar si el contenido no está vacío
+            // verificar si el contenido no está vacío
             if (string.IsNullOrWhiteSpace(contenido))
             {
                 ModelState.AddModelError("", "El contenido no puede estar vacío.");
                 return RedirectToAction(nameof(CreatePrompt), new { usuarioId });
             }
 
-            // Verificar si el usuario existe
+            // verificar si el usuario existe
             var usuario = await _context.Usuarios.FindAsync(usuarioId);
             if (usuario == null)
             {
@@ -80,12 +77,12 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Crear el nuevo diario
+            // crear el nuevo diario con el id dele usuario, el contenido y la fecha y hora de ese momento
             var diario = new Diario
             {
                 UsuarioId = usuarioId,
                 Contenido = contenido,
-                FechaHora = DateTime.Now // Asegúrate de que tu modelo tenga esta propiedad
+                FechaHora = DateTime.Now 
             };
 
             _context.Add(diario);
@@ -104,10 +101,37 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Si el usuario existe, redirigir a la vista para crear un diario
-            ViewBag.UsuarioId = usuarioId; // Pasar el ID del usuario a la vista
+            // se usará nuevamente el viewbag para mostrar y usar el id del usuario en el index
+            ViewBag.UsuarioId = usuarioId; 
             return View();
         }
+
+
+
+        [HttpPost]
+        public IActionResult AgregarEntrada(int usuarioId, string contenido)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == usuarioId);
+            if (usuario == null)
+            {
+            
+                return NotFound("Usuario no encontrado.");
+            }
+
+            var nuevaEntrada = new Diario
+            {
+                UsuarioId = usuarioId,
+                Contenido = contenido,
+                FechaHora = DateTime.Now
+            };
+
+            _context.Diarios.Add(nuevaEntrada);
+            _context.SaveChanges();
+
+            // Redirecciona al índice o a la vista del diario actualizado
+            return RedirectToAction("Index", new { usuarioId });
+        }
+
 
 
 

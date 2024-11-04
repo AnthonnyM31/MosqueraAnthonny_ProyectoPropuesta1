@@ -38,14 +38,13 @@
         </div>
     }
 
-    <h4>Agregar nuevo contenido</h4>
-    <form asp-action="Create" method="post">
-        <input type="hidden" name="usuarioId" value="@Model.FirstOrDefault().UsuarioId" />
+    <h3>Agregar nuevo contenido</h3>
+    <form asp-action="AgregarEntrada" method="post">
+        <input type="hidden" name="usuarioId" value="@ViewBag.IdUsuario" />
         <div class="form-group">
-            <label for="contenido">Contenido</label>
-            <textarea id="contenido" name="contenido" class="form-control" required></textarea>
+            <label for="Contenido">Contenido</label>
+            <textarea id="Contenido" name="contenido" class="form-control" required></textarea>
         </div>
         <button type="submit" class="btn btn-success">Agregar Entrada</button>
     </form>
 }
-
