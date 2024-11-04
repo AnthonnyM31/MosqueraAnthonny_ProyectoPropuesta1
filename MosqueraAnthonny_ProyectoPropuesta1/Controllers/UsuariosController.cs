@@ -20,10 +20,52 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
         }
 
         // GET: Usuarios
-        public async Task<IActionResult> Index()
+        /*public async Task<IActionResult> Index()
         {
             return View(await _context.Usuarios.ToListAsync());
+        }*/
+
+
+
+        public async Task<IActionResult> Index()
+        {
+            // Obtener la lista de usuarios
+            var usuarios = await _context.Usuarios.ToListAsync();
+
+            // Crear un diccionario para almacenar el número de actualizaciones de cada usuario
+            ViewData["Actualizaciones"] = usuarios.ToDictionary(
+                usuario => usuario.Id,
+                usuario => _context.Diarios.Count(d => d.UsuarioId == usuario.Id)
+            );
+
+            // Pasar la lista de usuarios a la vista
+            return View(usuarios);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // GET: Usuarios/Details/5
         public async Task<IActionResult> Details(int? id)

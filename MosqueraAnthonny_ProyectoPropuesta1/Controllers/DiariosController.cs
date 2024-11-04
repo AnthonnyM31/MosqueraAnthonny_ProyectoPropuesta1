@@ -114,23 +114,37 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == usuarioId);
             if (usuario == null)
             {
-            
                 return NotFound("Usuario no encontrado.");
             }
 
+            // Agregar nueva entrada
             var nuevaEntrada = new Diario
             {
                 UsuarioId = usuarioId,
                 Contenido = contenido,
                 FechaHora = DateTime.Now
             };
-
             _context.Diarios.Add(nuevaEntrada);
+
+            // Contar el número de entradas del usuario
+            var totalEntradas = _context.Diarios.Count(d => d.UsuarioId == usuarioId);
+
+            // Verificar si se alcanzaron las cinco actualizaciones
+            if (totalEntradas % 5 == 0)
+            {
+                usuario.Puntos += 100;
+            }
+
             _context.SaveChanges();
 
-            // Redirecciona al índice o a la vista del diario actualizado
+          
             return RedirectToAction("Index", new { usuarioId });
         }
+
+
+
+
+
 
 
 
