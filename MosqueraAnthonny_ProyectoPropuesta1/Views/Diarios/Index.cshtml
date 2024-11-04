@@ -29,7 +29,7 @@
 
 @if (Model != null && Model.Any())
 {
-    <h3>Diarios del Usuario</h3>
+    <h3>Diario del usuario "@ViewBag.NombreUsuario" con ID "@ViewBag.IdUsuario"</h3>
     foreach (var diario in Model)
     {
         <div>
@@ -39,13 +39,13 @@
     }
 
     <h4>Agregar nuevo contenido</h4>
-    <form asp-action="CreateDiario" method="post">
-        <input type="hidden" name="usuarioId" value="@ViewBag.UsuarioId" />
+    <form asp-action="Create" method="post">
+        <input type="hidden" name="usuarioId" value="@Model.FirstOrDefault().UsuarioId" />
         <div class="form-group">
             <label for="contenido">Contenido</label>
             <textarea id="contenido" name="contenido" class="form-control" required></textarea>
         </div>
-        <button type="submit" class="btn btn-success">Crear Diario</button>
+        <button type="submit" class="btn btn-success">Agregar Entrada</button>
     </form>
-
 }
+

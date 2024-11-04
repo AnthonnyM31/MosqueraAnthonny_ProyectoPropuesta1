@@ -29,6 +29,14 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return View(new List<Diario>());
             }
 
+            // Buscar el usuario
+            var usuario = await _context.Usuarios.FindAsync(usuarioId);
+            if (usuario == null)
+            {
+                ViewBag.Mensaje = "No se encontró un usuario con el ID proporcionado.";
+                return View(new List<Diario>());
+            }
+
             // Buscar los diarios del usuario con el ID especificado
             var diariosUsuario = await _context.Diarios
                 .Where(d => d.UsuarioId == usuarioId)
@@ -41,9 +49,14 @@ namespace MosqueraAnthonny_ProyectoPropuesta1.Controllers
                 return View(new List<Diario>());
             }
 
+            // Pasar el nombre y el ID del usuario a la vista
+            ViewBag.NombreUsuario = usuario.NombreUsuario;
+            ViewBag.IdUsuario = usuarioId;
+
             // Mostrar los diarios del usuario encontrado
             return View(diariosUsuario);
         }
+
 
 
 
